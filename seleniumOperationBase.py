@@ -146,6 +146,35 @@ class SeleniumOperationBase:
             self.outputException(webElement)
             raise
 
+    # 指定した要素が表示されるまで待機する
+    def waitWebElementVisibility(self,webElement,waitTime=0):
+        try:
+            time.sleep(waitTime)
+            self.wait.until(expected_conditions.visibility_of_element_located((By.XPATH,webElement)))
+        except RuntimeError as err:
+            self.log.error('要素待機失敗:'+webElement)
+            self.log.error('例外発生 {0}'.format(err))
+            self.getScreenShot()
+            raise
+        except:
+            self.outputException(webElement)
+            raise
+    
+    # 指定した要素が存在するかを確認する要素が存在するとTrue
+    def existenceWebElements(self,webElement,waitTime=0):
+        time.sleep(waitTime)
+        elements=self.driver.find_elements_by_xpath(webElement)
+        if len(elements) ==0:
+            return False
+        else:
+            return True
+
+    # 指定した要素を返す elementsの状態で返す
+    def getWebElements(self,webElement,waitTime=0):
+        time.sleep(waitTime)
+        elements=self.driver.find_elements_by_xpath(webElement)
+        return elements
+
 
     # スクリーンショットを取得する 任意の名前を付けられるようにする
     def getScreenShot(self,screenShotName='',sleepTime=3):
@@ -161,10 +190,27 @@ class SeleniumOperationBase:
         root=Tk()
         # メッセージボックス表示時に表示されるウィンドウを最小表示にする
         root.withdraw()
+        root.attributes('-topmost', True)
+        root.withdraw()
+        root.lift()
+        root.focus_force()
         messagebox.showinfo(titlemessage,dispWord)
         # メッセージボックス表示時に表示されるウィンドウを消す
         root.quit()
 
+    # エラー発生時の注意喚起用のダイアログを作成する必要に応じて呼び出し元でメッセージなどを設定する
+    def errorAlertDialog(self,titemessage='エラー発生',dispWord='エラーが発生しています。'):
+        root=Tk()
+        # メッセージボックス表示時に表示されるウィンドウを最小表示にする
+        root.withdraw()
+        root.attributes('-topmost', True)
+        root.withdraw()
+        root.lift()
+        root.focus_force()
+        messagebox.showwarning(titemessage,dispWord)
+        # メッセージボックス表示時に表示されるウィンドウを消す
+        root.quit()
+    
     # 指定した位置までスクロールを行う
     def moveScroll(self,webElement):
         # スクロール確認の処理 指定した位置までスクロールを行う
@@ -181,6 +227,13 @@ class SeleniumOperationBase:
         except:
             self.outputException(webElement)
             raise
+
+    # 対象の要素までスクロールしてスクリーンショットをとる
+    # find_element_by_xpathで指定した後の要素に対して処理を行う
+    def moveScrollAndGetScreenShot(self,webElement,screenShotName=''):
+        self.driver.execute_script("arguments[0].scrollIntoView();", webElement)
+        self.adjustScroll(-10)
+        self.getScreenShot(screenShotName)
 
     # 画面をスクロールさせる
     def adjustScroll(self,offset):
