@@ -5,7 +5,21 @@ import os
 
 # ログの出力処理
 class LoggerObj:
+
+    loggers={}
+    logger=None
     def __init__(self, name=__name__,logFilename='log_'):
+        print('log作成:'+name+':'+logFilename)
+        pass
+
+    def createLog(self, name=__name__,logFilename='log_'):
+
+        if len(self.loggers)!=0:
+            if name in self.loggers:
+                # すでに作成済みなら重複して作成しないようにする
+                return self.loggers[name]
+
+
         self.logger = getLogger(name)
         self.logger.setLevel(DEBUG)
         formatter = Formatter("[%(levelname)s]:[%(asctime)s]: %(message)s")
@@ -27,6 +41,10 @@ class LoggerObj:
             handler.setLevel(DEBUG)
             handler.setFormatter(formatter)
             self.logger.addHandler(handler)
+
+        self.loggers[name]=self.logger
+        return self.logger
+
 
     def debug(self, msg):
         self.logger.debug(msg)
