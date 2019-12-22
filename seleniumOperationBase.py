@@ -304,7 +304,12 @@ class SeleniumOperationBase:
         try:
             self.wait.until(expected_conditions.visibility_of_element_located((By.XPATH,webElement)))
             inputLabel=self.driver.find_element_by_xpath(webElement)
-            self.driver.execute_script("arguments[0].scrollIntoView();", inputLabel)
+
+            try:
+                self.driver.execute_script("arguments[0].scrollIntoView();", inputLabel)
+            except:
+                self.log.warning('画面スクロール失敗 再実行')
+                inputLabel.location_once_scrolled_into_view
 
         except SystemError as err:
             self.log.error('画面スクロール失敗:'+webElement)
@@ -318,7 +323,13 @@ class SeleniumOperationBase:
     # 対象の要素までスクロールしてスクリーンショットをとる
     # find_element_by_xpathで指定した後の要素に対して処理を行う
     def moveScrollAndGetScreenShot(self,webElement,screenShotName=''):
-        self.driver.execute_script("arguments[0].scrollIntoView();", webElement)
+
+        try:
+            self.driver.execute_script("arguments[0].scrollIntoView();", webElement)
+        except:
+            self.log.warning('画面スクロール失敗 再実行')
+            webElement.location_once_scrolled_into_view
+            
         self.adjustScroll(-10)
         self.getScreenShot(screenShotName)
     # 指定した要素の文字列を返す ラベルを確認するときに使用する
