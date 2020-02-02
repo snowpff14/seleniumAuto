@@ -283,7 +283,7 @@ class SeleniumOperationBase:
         root.focus_force()
         messagebox.showinfo(titlemessage,dispWord)
         # メッセージボックス表示時に表示されるウィンドウを消す
-        root.quit()
+        root.destroy()
 
     # エラー発生時の注意喚起用のダイアログを作成する必要に応じて呼び出し元でメッセージなどを設定する
     def errorAlertDialog(self,titemessage='エラー発生',dispWord='エラーが発生しています。'):
@@ -296,7 +296,7 @@ class SeleniumOperationBase:
         root.focus_force()
         messagebox.showwarning(titemessage,dispWord)
         # メッセージボックス表示時に表示されるウィンドウを消す
-        root.quit()
+        root.destroy()
     
     # 指定した位置までスクロールを行う
     def moveScroll(self,webElement):
